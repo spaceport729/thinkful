@@ -1,0 +1,101 @@
+-- Update values to remove $ for price fields and , % for host response/acceptance rates (Examples - all done separately). Also changed data 
+-- types in database to integer, real and integer (0,1) for boolean results.
+
+UPDATE listings
+
+SET host_acceptance_rate = REPLACE(host_acceptance_rate, '%', '')
+
+UPDATE listings
+
+is_location_exact = REPLACE(is_location_exact, 't', '1')
+
+
+--What's the most expensive listing? What else can you tell me about this listing?
+  For the listings in January (when this dataset was compiled) the most expensive listing is 4825073 at $1000
+  For the pricing data on the calendar, the most expensive listing is 3308979 at $1650
+  Focusing on 3308979:
+  
+  1. The max cost per night is $1650 and was priced that way between 10-20-2016 to 12-31-2016
+  2. The min cost per night is $500 and was priced that from 3-11-2016 to 3-13-2016
+  3. The house has a water view and is in Upper Queen Anne
+  4. It is booked fairly often (or is offered by the host on a limited basis) - it's available 1 day in the next 30 days, 6 in the next 60 and 17 in the next 90
+  
+  
+  -- Most expensive listing on the calendar (similar query done for the listings table)
+  SELECT
+	listing_id,
+	date,
+	price
+FROM
+	calendar
+	
+ORDER BY
+	price DESC
+
+-- identifying range of particular pricing (similar done with max)  
+SELECT
+	listing_id,
+	date,
+	price
+FROM
+	calendar
+WHERE
+	listing_id = 3308979 AND price = '500'
+	
+ORDER BY
+	date DESC
+
+-- Additional information
+  SELECT
+	*
+FROM
+	listings
+WHERE
+	id = 3308979
+  
+  -- What neighborhoods seem to be most popular
+ 
+"Capitol Hill"	"351"
+"Ballard"	"213"
+"Belltown"	"204"
+"Minor"	"192"
+"Queen Anne"	"187"
+  
+SELECT
+	neighbourhood,
+	COUNT(*)
+FROM
+	listings
+GROUP BY
+	neighboUrhood
+ORDER BY
+	count(*) DESC
+
+-- What time of year is the cheapest time to go to your city? What about the busiest?
+  It is least expensive to travel to Seattle in January after the New Year (1/4 through the beginning of February)
+  I assumed the busy time of year had the least availability - that also turned out to be January. I think this may be that less people
+  make their places available during those months. Is there another way to answer this?
+  
+  
+  SELECT
+	DATE(date),
+	AVG(price)
+
+FROM
+	calendar
+GROUP BY
+	date
+ORDER BY
+	AVG(price)
+  
+  SELECT
+	SUM(available),
+	date
+
+FROM
+	calendar
+GROUP BY 
+	date
+ORDER BY
+	SUM(available)
+	

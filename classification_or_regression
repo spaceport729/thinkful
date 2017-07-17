@@ -1,0 +1,22 @@
+For each of the following situations, decide if you would model using a regression or classification model. Discuss your reasoning with your mentor next time you meet.
+
+1. The amount a person will spend on a given site in the next 24 months.
+    The output of this model is a numerical variable. I'd use a regression model.
+
+2. What color car someone is going to buy.
+    The output for this model is a categorical variable (a color assigned based on a likelihood). I use a classification model.
+    
+3. How many children a family will have.
+    This data would be bounded on one end by zero. It is a little tricky because you are unlikely to observe some of the larger numbers in your training set which would prevent that outcome from being predicted by the model.. I'd likely still use a classification model since the outcome is a discreet, categorical variable that I'm attempting to predict using a probability. Especially if I could assign one categorical outcome as "> some number" that represented the unusually large numbers possible
+
+4. If someone will sign up for a service.
+    The output is categorical (yes, no). I'd use a classification model
+
+5. The number of times someone will get sick in a year.
+    This could potentially use a classification or a regression model. I'd choose a regression model because it would be difficult to represent the range of the possible numbers in the training set. Regression could potentially allow predictions outside of the observed max and minima. 
+
+6. The probability someone will get sick in the next month.
+    The outcome is variable is categorical (probability of yes, probability of no). I'd use a classification model.
+
+7. Which medicine will work best for a given patient.
+    The outcome - type of medicine - is a categorical variable and there is no obvious relationship to form between medicines. I'd use a classification model

@@ -20,7 +20,7 @@ AS (
 SELECT
     total_spent.name
     total_spent.summed_transactions
-    ROW_NUMBER() OVER (PARTITION BY total_spent.state ORDER BY total_spent DESC) AS row_number
+    ROW_NUMBER() OVER (PARTITION BY total_spent.state ORDER BY total_spent.summed_transactions DESC) AS row_number
 FROM total_spent
 WHERE row_number < 6;
 

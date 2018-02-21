@@ -28,6 +28,21 @@ AS (
 
 
 2. Do paid users prefer different genres of videos than unpaid users?
+    (returning the rank of each genre and view counts within each subscription type)
+   SELECT
+       views.genre
+       subscriptions.is_paid
+       COUNT(views.genre)
+       RANK() OVER(BY PARTITION subscriptions.is_paid, ORDER BY COUNT(views.genre) DESC) AS rank
+   FROM
+       views
+   JOIN
+       subscriptions
+   ON
+       views.start_at BETWEEN subscriptions.start_date AND subscriptions.end_date
+   WHERE
+       views.customer_id = subscriptions.customer_id
+   GROUP BY views.genre, subscriptions.is_paid, rank
    
 
 

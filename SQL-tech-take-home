@@ -1,24 +1,40 @@
 1. Do people watch more videos after converting from unpaid to paid membership?
-* limit subscriptions table to customers with 2 subscriptions and where is_paid subscription is after unpain subscription
+* limit subscriptions table to customers with 2 subscriptions and where is_paid subscription is after unpaid subscription
 
 WITH
     video_counts
 AS (
     SELECT
             Views.customer_id AS customer_id,
-            Subscriptions.is_paid AS is_paid,
+            subs_2.is_paid AS is_paid,
             COUNT(*) AS total_videos_viewed
     FROM 
             Views
     JOIN
-            Subscriptions  *change to table created above
+            (SELECT
+                customer_id
+                start_date,
+                end_date,
+                is_paid
+                RANK() OVER(PARTITION BY customer_id, ORDER BY
+             FROM
+                subscriptions
+             GROUP BY 
+                customer_id,
+                start_date
+                end_date
+                is_paid
+             HAVING 
+                COUNT(customer_id) = 2 AND 
+             
+                ) AS subs_2
     ON
-            Views.start_at BETWEEN Subscriptions.start_date AND Subscriptions.end_date
+            Views.start_at BETWEEN subs_2.start_date AND subs_2.end_date
     WHERE
             Views.customer_id = Subscriptions.customer_id 
             
     GROUP BY
-            Views.customer_id, Subscriptions.is_paid
+            Views.customer_id, subs_2.is_paid
 )
 
 

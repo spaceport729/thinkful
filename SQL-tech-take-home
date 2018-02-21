@@ -1,5 +1,7 @@
-1. Do people watch more videos after converting from unpaid to paid membership?
-* limit subscriptions table to customers with 2 subscriptions and where is_paid subscription is after unpaid subscription
+### 1. Do people watch more videos after converting from unpaid to paid membership?
+
+# create table with total view counts by subscription, join on subquery that limits to customers with more than one subscription -
+# with the older subscription unpaid and the new subscription paid
 
 WITH
     video_counts
@@ -16,17 +18,17 @@ AS (
                 start_date,
                 end_date,
                 is_paid
-                RANK() OVER(PARTITION BY customer_id, ORDER BY
+                RANK() OVER(PARTITION BY customer_id, ORDER BY end_date ASC) AS rank
              FROM
                 subscriptions
              GROUP BY 
                 customer_id,
-                start_date
-                end_date
+                start_date,
+                end_date,
+                rank
                 is_paid
              HAVING 
-                COUNT(customer_id) = 2 AND 
-             
+                COUNT(customer_id) = 2 AND ((is_paid = 'yes' AND rank = 2) OR (is_paid = 'no' AND rank = 1))
                 ) AS subs_2
     ON
             Views.start_at BETWEEN subs_2.start_date AND subs_2.end_date
@@ -38,12 +40,18 @@ AS (
 )
 
 
-* compare averages between groups and return yes - paid subscriptions have more views or no - paid subscriptions do not have more views
+# Output average number of videos viewed between the two subscription types
+SELECT 
+    is_paid
+    AVG(total_videos_viewed)
+FROM
+    video_counts
+GROUP BY
+    is_paid
 
 
 
-
-2. Do paid users prefer different genres of videos than unpaid users?
+### 2. Do paid users prefer different genres of videos than unpaid users?
     (returning the rank of each genre and view counts within each subscription type)
    SELECT
        views.genre
@@ -63,7 +71,7 @@ AS (
 
 
 
-3. What are the most popular videos for our 100 most frequent viewers? What percentage of those users are paid for each video?
+### 3. What are the most popular videos for our 100 most frequent viewers? What percentage of those users are paid for each video?
 
 # join views and customers to get subscription status (based on date) and limit top customers by rank
   WITH 
@@ -88,7 +96,7 @@ AS (
  
  SELECT
     video_name,
-    ROUND(100.0 * (CASE WHEN is_paid = 'yes'THEN 1 ELSE 0 END)/COUNT(video_name)) OVER(PARTITION BY video_name) AS percentage_paid
+    ROUND(100.0 * (CASE WHEN is_paid = 'yes'THEN 1 ELSE 0 END)/COUNT(video_name),1) OVER(PARTITION BY video_name) AS percentage_paid
     RANK() OVER(ORDER BY COUNT(video_name) DESC) AS video_count
     
  FROM

@@ -27,4 +27,53 @@ AS (
 
 
 
-2. 
+2. Do paid users prefer different genres of videos than unpaid users?
+   
+
+
+
+3. What are the most popular videos for our 100 most frequent viewers? What percentage of those users are paid for each video?
+
+# join views and customers to get subscription status (based on date) and limit top customers by rank
+  WITH 
+    top_customer_videos 
+  AS (
+    SELECT
+        views.customer_id AS customer_id, 
+        views.video_name AS video_name,
+        subscriptions.is_paid AS is_paid,
+        RANK() OVER (ORDER BY COUNT(views.customer_id) DESC) AS rank
+    FROM
+        views
+    JOIN
+        subscriptions
+    ON
+       views.start_at BETWEEN subscriptions.start_date AND subscriptions.end_date 
+    WHERE
+        rank <= 100 AND Views.customer_id = Subscriptions.customer_id
+        )
+      
+ # return top 20 videos and percentage value of paid subscriptions
+ 
+ SELECT
+    video_name,
+    ROUND(100.0 * (CASE WHEN is_paid = 'yes'THEN 1 ELSE 0 END)/COUNT(video_name)) OVER(PARTITION BY video_name) AS percentage_paid
+    RANK() OVER(ORDER BY COUNT(video_name) DESC) AS video_count
+    
+ FROM
+    top_customer_videos
+ WHERE
+    video_count <= 20
+ GROUP BY
+    video_name
+
+ 
+    
+ 
+ 
+  
+    
+    
+    
+  
+  

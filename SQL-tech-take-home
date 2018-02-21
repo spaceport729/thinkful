@@ -1,24 +1,30 @@
 1. Do people watch more videos after converting from unpaid to paid membership?
+* limit subscriptions table to customers with 2 subscriptions and where is_paid subscription is after unpain subscription
 
 WITH
     video_counts
 AS (
     SELECT
-            Views.customer_id,
-            Subscriptions.is_paid,
+            Views.customer_id AS customer_id,
+            Subscriptions.is_paid AS is_paid,
             COUNT(*) AS total_videos_viewed
     FROM 
             Views
     JOIN
-            Subscriptions
+            Subscriptions  *change to table created above
     ON
             Views.start_at BETWEEN Subscriptions.start_date AND Subscriptions.end_date
     WHERE
-            Views.customer_id = Subscriptions.customer_id
+            Views.customer_id = Subscriptions.customer_id 
+            
     GROUP BY
             Views.customer_id, Subscriptions.is_paid
 )
 
-SELECT
-    AVG(video_counts.total_videos_views)
-    
+
+* compare averages between groups and return yes - paid subscriptions have more views or no - paid subscriptions do not have more views
+
+
+
+
+2. 

@@ -1,0 +1,24 @@
+1. Do people watch more videos after converting from unpaid to paid membership?
+
+WITH
+    video_counts
+AS (
+    SELECT
+            Views.customer_id,
+            Subscriptions.is_paid,
+            COUNT(*) AS total_videos_viewed
+    FROM 
+            Views
+    JOIN
+            Subscriptions
+    ON
+            Views.start_at BETWEEN Subscriptions.start_date AND Subscriptions.end_date
+    WHERE
+            Views.customer_id = Subscriptions.customer_id
+    GROUP BY
+            Views.customer_id, Subscriptions.is_paid
+)
+
+SELECT
+    AVG(video_counts.total_videos_views)
+    

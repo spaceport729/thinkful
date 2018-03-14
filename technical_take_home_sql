@@ -17,8 +17,6 @@ Write queries, valid for postgres 9.3, to generate the following results:
 
 a. Return the name and purchase amount of the five customers in each state who have spent the most on our site.
 b. The name most popular item in every state and the state.
-c. The five most popular items for users with a ‘gmail’ email in the past 30 days, based on number of sales.
-
 
 
 a. Return the name and purchase amount of the five customers in each state who have spent the most on our site.

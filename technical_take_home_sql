@@ -1,0 +1,67 @@
+This is the technical take home for Nile.com, an online shopping site. Not to be confused with a river in South America that it totally isn’t.
+
+Question 1: SQL
+
+Our PostGRES database has 3 tables: transactions, products, and customers. They have the following schemas:
+ "|Trans. Column      | Data type |    | Prods. Column     | Data type |    | Custs. Column | Data type  |\n",
+    "|-------------------|-----------|    |-------------------|-----------|    |---------------|------------|\n",
+    "|   customer_id     | int       |    |   product_id      | int       |    | customer_id   | int        |\n",
+    "|   transact_at     | timestamp |    |   add_at          | timestamp |    | joined_at     | timestamp  |\n",
+    "|   transact_amt    | real      |    |   product_cost    | real      |    | last_login_at | timestamp  |\n",
+    "|   transact_id     | int       |    |   product_name    | varchar   |    | state         | varchar    |\n",
+    "|   product_id      | real      |    |   product_category| varchar   |    | is_deactivated| bool       |\n",
+    "|   payment_type    | varchar   |    |                   |           |    | name          | varchar    |\n",
+    "|   payment_success | bool      |    |                   |           |    | e-mail        | varchar    |\n",
+Write queries, valid for postgres 9.3, to generate the following results:
+
+
+a. Return the name and purchase amount of the five customers in each state who have spent the most on our site.
+b. The name most popular item in every state and the state.
+c. The five most popular items for users with a ‘gmail’ email in the past 30 days, based on number of sales.
+
+
+
+a. Return the name and purchase amount of the five customers in each state who have spent the most on our site.
+
+WITH 
+    total_spent 
+AS (
+    SELECT
+            customers.name,
+            customers.state,
+            SUM (transactions.transact_amt) AS summed_transactions
+    FROM 
+            customers
+    JOIN
+            transactions
+    ON
+            customers.customer_id = transactions.customer_id
+    GROUP BY
+            customers.name
+)
+
+SELECT
+    total_spent.name
+    total_spent.summed_transactions
+    ROW_NUMBER() OVER (PARTITION BY total_spent.state ORDER BY total_spent.summed_transactions DESC) AS row_number
+FROM total_spent
+WHERE row_number < 6;
+
+
+b.The name most popular item in every state and the state.
+
+SELECT
+    products.product_name,
+    customers.state,
+    RANK() OVER (PARTITION BY customers.state ORDER BY COUNT(products.product_id) DESC) AS rank
+FROM 
+    transactions
+JOIN
+    products
+ON
+    transactions.product_id = products.product_id
+JOIN
+    customers
+ON
+    customers.customer_id = transactions.customer_id
+WHERE rank =1;

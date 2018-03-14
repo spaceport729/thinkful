@@ -1,8 +1,5 @@
 ### 1. Do people watch more videos after converting from unpaid to paid membership?
 
-# create table with total view counts by subscription, join on subquery that limits to customers with more than one subscription -
-# with the older subscription unpaid and the new subscription paid
-
 WITH
     video_counts
 AS (
